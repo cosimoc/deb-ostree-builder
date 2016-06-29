@@ -109,6 +109,12 @@ fi
 mv "${EOB_ROOTDIR}"/etc "${EOB_ROOTDIR}"/usr
 ${EOB_HELPERSDIR}/split_passwd_files "${EOB_ROOTDIR}"
 
+# fsck of / is disabled here, because it is checked in the initramfs before
+# mount, independent of fstab contents
+cat <<EOF > "${EOB_ROOTDIR}"/usr/etc/fstab
+LABEL=ostree / ext4  errors=remount-ro 0 0
+EOF
+
 cat <<EOF > "${EOB_ROOTDIR}"/usr/lib/tmpfiles.d/ostree.conf
 L /var/home - - - - ../sysroot/home
 d /var/roothome 0700 root root -
