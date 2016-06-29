@@ -109,10 +109,6 @@ fi
 mv "${EOB_ROOTDIR}"/etc "${EOB_ROOTDIR}"/usr
 ${EOB_HELPERSDIR}/split_passwd_files "${EOB_ROOTDIR}"
 
-# clear the "UNCONFIGURED FSTAB" warning from debootstrap as we don't need any entries
-# / is mounted and checked in the initramfs and our other mount points are systemd units
-: > "${EOB_ROOTDIR}"/usr/etc/fstab
-
 cat <<EOF > "${EOB_ROOTDIR}"/usr/lib/tmpfiles.d/ostree.conf
 L /var/home - - - - ../sysroot/home
 d /var/roothome 0700 root root -
