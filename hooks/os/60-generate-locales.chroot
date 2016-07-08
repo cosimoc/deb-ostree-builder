@@ -3,9 +3,9 @@
 
 echo "I: Regenerate locales"
 if [ -f /usr/share/i18n/SUPPORTED -a -s /usr/share/i18n/SUPPORTED ]; then
-  cp /usr/share/i18n/SUPPORTED /etc/locales/supported.d/local
+  cp /usr/share/i18n/SUPPORTED /etc/locale.gen
 else
-  cat >/etc/locales/supported.d/local<<'EOF'
+  cat >/etc/locale.gen<<'EOF'
 ar_AE.UTF-8 UTF-8
 ar_BH.UTF-8 UTF-8
 ar_DZ.UTF-8 UTF-8
