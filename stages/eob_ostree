@@ -132,6 +132,14 @@ ln -s /var/opt "${EOB_ROOTDIR}"/opt
 ln -s /var/local "${EOB_ROOTDIR}"/usr/local
 ln -s /run/media "${EOB_ROOTDIR}"/media
 
+if [ "${EOB_OSTREE_TYPE}" != runtime ]; then
+cat <<EOF > "${EOB_ROOTDIR}"/usr/lib/tmpfiles.d/flatpak.conf
+d /ostree/repo 0755 - - -
+d /var/lib/flatpak 0755 - - -
+L /var/lib/flatpak/repo - - - - /ostree/repo
+EOF
+fi
+
 # Convert to xdg-app runtime if necessary
 if [ "${EOB_OSTREE_TYPE}" = runtime ]; then
   # Remove non-/usr and move to /files
