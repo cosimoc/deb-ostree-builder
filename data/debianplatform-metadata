@@ -7,6 +7,9 @@ sdk=org.debian.Sdk/@EOB_RUNTIME_ARCH@/@EOB_RUNTIME_BRANCH@
 LD_LIBRARY_PATH=/app/lib/@EOB_RUNTIME_MULTIARCH@:/app/lib
 GI_TYPELIB_PATH=/app/lib/@EOB_RUNTIME_MULTIARCH@/girepository-1.0:/app/lib/girepository-1.0
 PATH=/app/bin:/app/games:/usr/bin
+KDEDIRS=/app
+PERL5LIB=/app/share/perl5:/app/lib/perl5:/app/lib/@EOB_RUNTIME_MULTIARCH@/perl5/5.20
+PYTHONPATH=/app/lib/python2.7/site-packages:/app/lib/python2.7/dist-packages
 
 [Session Bus Policy]
 org.freedesktop.portal.*=talk
