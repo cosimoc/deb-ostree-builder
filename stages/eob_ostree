@@ -134,8 +134,9 @@ ln -s /run/media "${EOB_ROOTDIR}"/media
 
 if [ "${EOB_OSTREE_TYPE}" != runtime ]; then
 cat <<EOF > "${EOB_ROOTDIR}"/usr/lib/tmpfiles.d/flatpak.conf
+d /sysroot/flatpak 0755 - - -
 d /ostree/repo 0755 - - -
-d /var/lib/flatpak 0755 - - -
+L /var/lib/flatpak - - - - /sysroot/flatpak
 L /var/lib/flatpak/repo - - - - /ostree/repo
 EOF
 fi
