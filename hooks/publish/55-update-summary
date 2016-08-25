@@ -1,5 +1,17 @@
-# Update the summary file remotely on the internal server
+# Update the summary file remotely on the internal server. If there are
+# runtime refs, use flatpak build-update-repo
 [ -n "${EOB_OSTREE_HOST}" ] || exit 0
-ssh ${EOB_SSH_OPTIONS} ${EOB_OSTREE_USER}@${EOB_OSTREE_HOST} \
-  ostree --repo="${EOB_OSTREE_REMOTEDIR}" summary --update \
-    --gpg-sign="${EOB_OSTREE_KEYID}"
+runtime_refs=$(ssh ${EOB_SSH_OPTIONS} \
+                   ${EOB_OSTREE_USER}@${EOB_OSTREE_HOST} \
+                   ostree --repo="${EOB_OSTREE_REMOTEDIR}" \
+                   refs runtime)
+
+if [ -n "$runtime_refs" ]; then
+  ssh ${EOB_SSH_OPTIONS} ${EOB_OSTREE_USER}@${EOB_OSTREE_HOST} \
+      flatpak build-update-repo --gpg-sign="${EOB_OSTREE_KEYID}" \
+      "${EOB_OSTREE_REMOTEDIR}"
+else
+  ssh ${EOB_SSH_OPTIONS} ${EOB_OSTREE_USER}@${EOB_OSTREE_HOST} \
+      ostree --repo="${EOB_OSTREE_REMOTEDIR}" summary --update \
+      --gpg-sign="${EOB_OSTREE_KEYID}"
+fi
