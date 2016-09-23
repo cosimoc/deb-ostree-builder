@@ -80,6 +80,7 @@ class CorePackages(object):
 
         # Setup configuration
         apt_pkg.config.set('APT::Architecture', self.arch)
+        apt_pkg.config.set('APT::Architectures', self.arch)
         apt_pkg.config.set('Dir', self.repo)
         apt_pkg.config.set('Dir::State::status', dpkg_status)
         if self.keyring is not None:
