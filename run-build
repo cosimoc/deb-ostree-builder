@@ -138,7 +138,7 @@ class OSTreeBuilder(object):
         self.cachedir = '${cacherootdir}/${product}-${branch}-${arch}-${platform}'
         self.configdir = '${srcdir}/config'
         self.sysconfdir = eob.SYSCONFDIR
-        self.build_version = datetime.datetime.now().strftime('%y%m%d-%H%M%S')
+        self.build_version = datetime.datetime.utcnow().strftime('%y%m%d-%H%M%S')
         self.outversion = '${product}-${branch}-${arch}-${platform}.${build_version}'
         self.tmpconfig = '${tmpdir}/config.ini'
         self.ssh_options = '-o StrictHostKeyChecking=no'
