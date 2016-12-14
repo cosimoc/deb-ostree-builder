@@ -147,6 +147,10 @@ if [ "${EOB_OSTREE_TYPE}" = runtime ]; then
   rm -rf "${EOB_ROOTDIR}"/!(usr)
   mv "${EOB_ROOTDIR}"/usr "${EOB_ROOTDIR}"/files
 
+  # Ensure sane permissions, so that we don't end
+  # up with unreadable files in the flatpak runtimes.
+  chmod -c -R a+r "${EOB_ROOTDIR}"/
+
   # Add in metadata
   sed \
     -e "s,@EOB_RUNTIME_ARCH@,${EOB_RUNTIME_ARCH},g" \
