@@ -115,12 +115,26 @@ cat <<EOF > "${EOB_ROOTDIR}"/usr/etc/fstab
 LABEL=ostree / ext4  errors=remount-ro 0 0
 EOF
 
+# Move dpkg database to /usr so it's accessible after the OS /var is
+# mounted, but make a symlink so it works without modifications to dpkg
+# or apt
+mkdir -p "${EOB_ROOTDIR}"/usr/share/dpkg
+if [ -e "${EOB_ROOTDIR}"/usr/share/dpkg/database ]; then
+  echo "ERROR: /usr/share/dpkg/database already exists!" >&2
+  ls -lR "${EOB_ROOTDIR}"/usr/share/dpkg/database >&2
+  exit 1
+fi
+mv "${EOB_ROOTDIR}"/var/lib/dpkg "${EOB_ROOTDIR}"/usr/share/dpkg/database
+ln -srv "${EOB_ROOTDIR}"/usr/share/dpkg/database \
+   "${EOB_ROOTDIR}"/var/lib/dpkg
+
 cat <<EOF > "${EOB_ROOTDIR}"/usr/lib/tmpfiles.d/ostree.conf
 L /var/home - - - - ../sysroot/home
 d /var/roothome 0700 root root -
 d /var/opt 0755 root root -
 d /var/local 0755 root root -
 d /run/media 0755 root root -
+L /var/lib/dpkg - - - - ../../usr/share/dpkg/database
 EOF
 
 mkdir -p "${EOB_ROOTDIR}"/sysroot
