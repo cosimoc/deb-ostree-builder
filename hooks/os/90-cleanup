@@ -11,6 +11,10 @@ rm -rf boot/*.bak etc/apt/sources.list~ etc/apt/trusted.gpg~ \
 # function without a machine-id.
 rm -f var/lib/dbus/machine-id etc/machine-id
 
+# Remove resolv.conf copied from the host by debootstrap. The settings
+# are only valid on the target host and will be populated at runtime.
+rm -f etc/resolv.conf
+
 # Remove flatpak repos. Anything here is not used and would later
 # conflict when merging in eos-convert-system.
 rm -rf var/lib/flatpak var/lib/flatpak-external-apps
