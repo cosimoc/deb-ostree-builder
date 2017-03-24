@@ -44,6 +44,11 @@ run_hooks os "${EOB_ROOTDIR}"
 # Cleanup
 chroot "${EOB_ROOTDIR}" apt-get clean
 
+# Setup support for i386 libraries in x86_64 bases
+if [ "${EOB_ARCH}" == "amd64" ] && [ "${EOB_OSTREE_TYPE}" == "runtime" ]; then
+    ln -s /app/lib/ld-linux.so.2 "${EOB_ROOTDIR}"/usr/lib/ld-linux.so.2
+fi
+
 # Revert hacks made above
 rm -f "${EOB_ROOTDIR}"/etc/dpkg/dpkg.cfg.d/image-build
 rm -f "${EOB_ROOTDIR}"/sbin/start-stop-daemon
