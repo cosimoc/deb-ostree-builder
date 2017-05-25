@@ -59,6 +59,7 @@ class OSTreeBuilder(object):
         ('cache', 'hooks'),
         ('seed', 'hooks'),
         ('os', 'hooks'),
+        ('os', 'components'),
         ('os', 'packages'),
         ('ostree', 'extra_refs'),
         ('publish', 'hooks'),

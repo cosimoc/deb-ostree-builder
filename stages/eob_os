@@ -8,8 +8,8 @@ run_hooks seed "${EOB_ROOTDIR}"
 # FIXME: write own debootstrap script to make image more minimal
 keyring=$(eob_keyring)
 debootstrap --arch=${EOB_ARCH} --keyring="${keyring}" \
-  --components="${EOB_OS_COMPONENTS}" ${EOB_BRANCH} "${EOB_ROOTDIR}" \
-  "${EOB_OS_REPO}" "${EOB_DATADIR}"/debootstrap.script
+	--components="${EOB_OS_COMPONENTS//+([[:space:]])/,}" ${EOB_BRANCH} \
+  "${EOB_ROOTDIR}" "${EOB_OS_REPO}" "${EOB_DATADIR}"/debootstrap.script
 
 cleanup() {
   eob_umount_all || :

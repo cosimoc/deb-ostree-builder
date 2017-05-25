@@ -180,7 +180,7 @@ make_tmp_ostree() {
   keyring=$(eob_keyring)
   debootstrap --arch=${EOB_ARCH} --keyring="${keyring}" \
     --variant=minbase --include="${packages}" \
-    --components="${EOB_OS_COMPONENTS}" ${EOB_BRANCH} \
+    --components="${EOB_OS_COMPONENTS//+([[:space:]])/,}" ${EOB_BRANCH} \
     "${EOB_OSTREE_TMPDIR}" "${EOB_OS_REPO}" \
     "${EOB_DATADIR}"/debootstrap.script
 }
