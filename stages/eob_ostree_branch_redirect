@@ -1,0 +1,67 @@
+#!/bin/bash -ex
+# -*- mode: Shell-script; sh-basic-offset: 2; indent-tabs-mode: nil -*-
+. "${EOB_BASELIB}"
+
+# Create a minimal ostree chroot to do commits and deployments with.
+# This allows the build to be independent of the host's ostree.
+make_tmp_ostree
+
+# Delete the remote that was added to pull the latest commit. Since we
+# rsync to the remote to publish, anything in the local config file
+# would should up on the server's repo.
+cleanup_ostree_config() {
+  tmp_ostree --repo="${EOB_OSTREE_REPODIR}" remote delete --if-exists \
+    ${EOB_OSTREE_OS} ${EOB_OSTREE_INT_URL}
+}
+
+# Cleanup for using the ostree chroot.
+cleanup() {
+  cleanup_ostree_config || :
+  cleanup_tmp_ostree || :
+}
+trap cleanup EXIT
+
+# Bind mount the ostree repo, sysconfdir and install root to the same
+# locations in the ostree chroot.
+EOB_OSTREE_CHROOT="${EOB_OSTREE_TMPDIR}${EOB_OSTREE_REPODIR}"
+EOB_SYSCONF_CHROOT="${EOB_OSTREE_TMPDIR}${EOB_SYSCONFDIR}"
+mkdir -p "${EOB_OSTREE_REPODIR}" "${EOB_OSTREE_CHROOT}" \
+  "${EOB_SYSCONF_CHROOT}"
+eob_mount --bind "${EOB_OSTREE_REPODIR}" "${EOB_OSTREE_CHROOT}"
+eob_mount --bind "${EOB_SYSCONFDIR}" "${EOB_SYSCONF_CHROOT}"
+eob_mount -t sysfs sysfs "${EOB_OSTREE_TMPDIR}"/sys
+eob_mount -t proc proc "${EOB_OSTREE_TMPDIR}"/proc
+eob_mount --bind /dev/pts "${EOB_OSTREE_TMPDIR}"/dev/pts
+
+if [ ! -f "${EOB_OSTREE_REPODIR}"/config ]; then
+  tmp_ostree --repo="${EOB_OSTREE_REPODIR}" init --mode archive-z2
+fi
+
+# Prune the builder's ostree to keep the local repo from growing
+# unbounded. The internal ostree server maintains the full history. Only
+# the latest commit on each ref is needed to minimize the commit size.
+tmp_ostree --repo="${EOB_OSTREE_REPODIR}" prune --refs-only --depth=0
+
+# To maintain history, pull in the latest commit from the local server.
+# Add the remote and pull in mirror mode so that the refs become the
+# local heads. Pull failures are ignored in case this is the first
+# commit for the tree.
+tmp_ostree --repo="${EOB_OSTREE_REPODIR}" remote add ${EOB_OSTREE_OS} \
+  ${EOB_OSTREE_URL} ${EOB_OSTREE_BRANCH}
+tmp_ostree --repo="${EOB_OSTREE_REPODIR}" pull --mirror ${EOB_OSTREE_OS} \
+  ${EOB_OSTREE_BRANCH} || :
+
+# Restore the original configuration to keep from polluting the remote.
+cleanup_ostree_config
+
+echo "Commit to ostree"
+mkdir -p ${EOB_OSTREE_TMPDIR}/empty
+tmp_ostree --repo="${EOB_OSTREE_REPODIR}" commit \
+  --gpg-sign=${EOB_OSTREE_KEYID} --gpg-homedir=${EOB_SYSCONFDIR}/gnupg \
+  --branch=${EOB_OSTREE_BRANCH} --subject="Branch redirect" \
+  --tree=dir=/empty \
+  --add-metadata-string "ostree.endoflife=Branch redirect" \
+  --add-metadata-string "ostree.endoflife-rebase=${EOB_REDIRECT_BRANCH_TO}"
+
+cleanup_tmp_ostree
+exit 0

@@ -39,7 +39,7 @@ class OSTreeBuilder(object):
         'builddir', 'tmpdir', 'rootdir', 'cacherootdir', 'cachedir',
         'configdir', 'sysconfdir', 'build_version', 'outversion',
         'tmpconfig', 'deb_host_gnu_cpu', 'deb_host_multiarch',
-        'ssh_options'
+        'ssh_options', 'redirect_branch_to'
     ]
 
     BOOLEAN_ATTRS = [
@@ -91,12 +91,14 @@ class OSTreeBuilder(object):
             super().__setattr__(attr, value)
 
     def __init__(self, product, branch, arch, platform,
-                 show_config=False, force=False, dry_run=False):
+                 show_config=False, force=False, redirect_branch_to=None,
+                 dry_run=False):
         # Create the config option first to allow the proxying between
         # it and this object's attributes.
         self.config = eob.OSTreeConfigParser()
         self.product = product
         self.branch = branch
+        self.redirect_branch_to = redirect_branch_to
         self.show_config = show_config
         self.force = force
         self.dry_run = dry_run
@@ -299,6 +301,7 @@ def main():
                             branch=args.branch,
                             arch=args.arch,
                             platform=args.platform,
+                            redirect_branch_to=args.redirect_branch_to,
                             show_config=args.show_config,
                             force=args.force,
                             dry_run=args.dry_run)

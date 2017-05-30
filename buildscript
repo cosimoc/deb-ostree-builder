@@ -27,6 +27,11 @@ if eob_check_update && [ "${EOB_FORCE}" != true ]; then
 fi
 
 # Real build stages
-eob_os
-eob_ostree
+if [ -n "${EOB_REDIRECT_BRANCH_TO}" ]; then
+  eob_ostree_branch_redirect
+else
+  eob_os
+  eob_ostree
+fi
+
 eob_publish
