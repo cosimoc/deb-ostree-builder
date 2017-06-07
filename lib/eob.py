@@ -121,7 +121,8 @@ def add_cli_options(argparser):
                            help='product to build')
     argparser.add_argument('-a', '--arch', help='architecture to build')
     argparser.add_argument('-P', '--platform', help='platform to build')
-    argparser.add_argument('--redirect-branch-to', help='create a branch redirect instead of building a tree')
+    argparser.add_argument('--redirect-branch-to', default='',
+                           help='create a branch redirect instead of building a tree')
     argparser.add_argument('--show-config', action='store_true',
                            help='show configuration and exit')
     argparser.add_argument('-f', '--force', action='store_true',
