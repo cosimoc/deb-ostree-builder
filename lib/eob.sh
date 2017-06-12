@@ -70,10 +70,12 @@ eob_mount() {
     return 1
   fi
 
-  mount "$@"
-
   # The target is the last argument
   eval target="\${$#}"
+
+  mkdir -p "${target}"
+  mount "$@"
+
   EOB_MOUNTS+=("${target}")
 }
 
