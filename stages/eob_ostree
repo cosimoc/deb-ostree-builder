@@ -161,9 +161,11 @@ if [ "${EOB_OSTREE_TYPE}" = runtime ]; then
   rm -rf "${EOB_ROOTDIR}"/!(usr)
   mv "${EOB_ROOTDIR}"/usr "${EOB_ROOTDIR}"/files
 
-  # Ensure sane permissions, so that we don't end
-  # up with unreadable files in the flatpak runtimes.
-  chmod -c -R a+r "${EOB_ROOTDIR}"/
+  # Ensure files are all readable, otherwise pulling/deltas can fail.
+  # Otherwise behave the same as ostree --canonical-permissions, which
+  # was added in 2017.4 so isn't available in EOS 3.1.
+  chmod -c -R a+r,a-st,go-w "${EOB_ROOTDIR}"/
+  chown -c -R -h 0:0 "${EOB_ROOTDIR}"/
 
   # Add in metadata
   sed \
